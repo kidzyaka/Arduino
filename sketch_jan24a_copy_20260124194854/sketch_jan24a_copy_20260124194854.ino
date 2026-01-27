@@ -1,0 +1,21 @@
+int blinksCount = 0;
+String bufferString;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(20);
+  blinksCount++;
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(20);
+
+  bufferString = "Total blinks: " + String(blinksCount) + "\n";
+
+  Serial.print(bufferString);
+}

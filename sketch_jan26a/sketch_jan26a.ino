@@ -1,9 +1,8 @@
 #include "DHT.h"
+#include <LiquidCrystal.h>
 
 #define DHTPIN 2
 #define SENSORLEDPIN 3
-#define OKLEDPIN 5
-#define NOTOKLEDPIN 4
 #define DHTERRORLEDPIN 9
 
 #define DHTTYPE DHT11
@@ -12,21 +11,18 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
+LiquidCrystal lcd(12, 11, 4, 5, 6, 7);
 
 
 void setup() {
   Serial.begin(9600);
   dht.begin();
   pinMode(SENSORLEDPIN, OUTPUT);
-  pinMode(OKLEDPIN, OUTPUT);
-  pinMode(NOTOKLEDPIN, OUTPUT);
   pinMode(DHTERRORLEDPIN, OUTPUT);
-  analogWrite(OKLEDPIN,5);
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-  pinMode(8, OUTPUT);
-  setColor(170, 0, 255);
-  setColor(255, 0, 0);
+  lcd.begin(16, 2);
+  lcd.print("Temperature:");
+  lcd.setCursor(0,1);
+  lcd.print("Humidity:");
 }
 
 void loop() {
@@ -37,36 +33,27 @@ void loop() {
   float t = dht.readTemperature();
   float h = dht.readHumidity();
 
-  if (isnan(t) || isnan(h)){
-    for (int i = 0; i <= 3; i++){
-      digitalWrite(DHTERRORLEDPIN, HIGH);
-      delay(50);
-      digitalWrite(DHTERRORLEDPIN, LOW);
-      delay(50);
-    }
-  }
+  lcd.setCursor(12,0);
+  lcd.print("    ");
+  lcd.setCursor(12,0);
+  lcd.print(t);
+
+  lcd.setCursor(12,1);
+  lcd.print("    ");
+  lcd.setCursor(12,1);
+  lcd.print(h);
 
   digitalWrite(SENSORLEDPIN,HIGH);
   delay(100);
   digitalWrite(SENSORLEDPIN, LOW);
   delay(100);
 
-  if (t > 22 || t < 18){
-    digitalWrite(NOTOKLEDPIN, HIGH);
-    digitalWrite(OKLEDPIN,LOW);
-  } else {
-    digitalWrite(NOTOKLEDPIN, LOW);
-    analogWrite(OKLEDPIN, 5);
-  }
 
-  if (h < 30){
-    setColor(255, 200, 0);
-  } else if (h > 65) {
-    setColor(0, 200, 255);
-  } else {
-    setColor(170, 0, 255);
+  if (isnan(h) || isnan(t)) {
+    digitalWrite(DHTERRORLEDPIN, HIGH);
+    delay(30);
+    digitalWrite(DHTERRORLEDPIN, LOW);
   }
-
 
 
   Serial.print("Температура: ");
@@ -74,10 +61,4 @@ void loop() {
   Serial.print("\nВлажность:");
   Serial.print(h);
   Serial.print("\n");
-}
-
-void setColor(int redValue, int greenValue,  int blueValue) {
-  analogWrite(6, redValue); 
-  analogWrite(7,  greenValue); 
-  analogWrite(8, blueValue);
 }

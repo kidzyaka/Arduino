@@ -6,9 +6,9 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define VRY A1
 #define SW  11
 
-#define BTN1 2
-#define BTN2 12
-#define BTN3 3
+#define LEDGREEN 2
+#define LEDRED 3
+
 
 int workTime;
 int breakTime;
@@ -16,9 +16,8 @@ int breakTime;
 void setup() {
   Serial.begin(9600);
   pinMode(SW, INPUT_PULLUP);
-  pinMode(BTN1, INPUT_PULLUP);
-  pinMode(BTN2, INPUT_PULLUP);
-  pinMode(BTN3, INPUT_PULLUP);
+  pinMode(LEDGREEN, OUTPUT);
+  pinMode(LEDRED, OUTPUT);
 
   lcd.begin(16,2);
   lcd.clear();
@@ -71,6 +70,8 @@ void loop() {
 
   int timerMinutes = workTime;
 
+  digitalWrite(LEDRED, HIGH);
+
   for(timerMinutes; timerMinutes > 0; timerMinutes--){
     lcd.print("Work time!");
     lcd.setCursor(0,1);
@@ -80,6 +81,8 @@ void loop() {
     lcd.print("min remain");
     delay(60000);
   }
+  digitalWrite(LEDRED, LOW);
+  digitalWrite(LEDGREEN, HIGH);
 
   lcd.clear();
   lcd.print("break time!");
@@ -106,6 +109,8 @@ void loop() {
     delay(60000);
   }
 
+  digitalWrite(LEDGREEN, LOW);
+
 
 }
 
@@ -124,9 +129,7 @@ int timeSelectScreen(String type) {
   } else if (type == "Break") {
     minutes = 5;
   }
-
   
-
   while(true){
     lcd.setCursor(0,1);
 

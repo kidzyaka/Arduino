@@ -1,8 +1,11 @@
 #include <NimBLEDevice.h>
 #include <BleKeyboard.h>
 #include <Keypad.h>
+#include <Adafruit_NeoPixel.h>
 
 BleKeyboard bleKeyboard("ESP32deck", "kidz",100);
+
+Adafruit_NeoPixel pixel = Adafruit_NeoPixel(1, 8, NEO_GRB + NEO_KHZ800);
 
 const byte ROWS = 4;
 const byte COLS = 4;

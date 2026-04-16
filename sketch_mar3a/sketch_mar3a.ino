@@ -1,45 +1,32 @@
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <WiFi.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+Adafruit_BME280 bme; // Объект датчика
 
 void setup() {
-  Serial.begin(115200);
-  Wire.begin(21, 22);
-  WiFi.STA.begin();
-
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
+  Serial.begin(9600);
+  
+  // Инициализация датчика по адресу 0x76 или 0x77
+  if (!bme.begin(0x76)) {
+    Serial.println("Датчик не найден! Проверьте контакты.");
+    while (1);
   }
-
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(40,0);
-  display.println(F("WiFi Scan"));
-  display.drawLine(4,10, 124, 10, SSD1306_WHITE);
-  display.display();
-  display.setCursor(0, 18);
-
 }
 
 void loop() {
-  int n = WiFi.scanNetworks();
+  Serial.print("Температура: ");
+  Serial.print(bme.readTemperature());
+  Serial.println(" *C");
 
-  for (int i = 0; i < n; ++i) {
+  Serial.print("Влажность: ");
+  Serial.print(bme.readHumidity());
+  Serial.println(" %");
 
-    String line = WiFi.SSID(i) + " | " + String(WiFi.RSSI(i)) + " dBm | " + "Ch: " + String(WiFi.channel(i));
-    display.println(line);
-    display.display();
-    Serial.println(line);
-    delay(10);
-  }
+  Serial.print("Давление: ");
+  Serial.print(bme.readPressure() / 100.0F);
+  Serial.println(" hPa");
 
-  delay(10000);
+  Serial.println("---");
+  delay(2000);
 }
